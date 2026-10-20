@@ -453,7 +453,7 @@
       <div class="guide-item"><b>Severity index</b>LTI = 5, MTI = 3, commuting/contractor = 2, FAI = 1, near miss = 0.5, plus 0.5 per lost day. It weights outcomes, so one LTI counts more than several near misses.</div>
       <div class="guide-item"><b>CRCI – verified-effective closure</b>Share of completed actions confirmed as effective on follow-up. High completion with low CRCI means actions are being closed without fixing the risk.</div>
       <div class="guide-item"><b>HIRADC bands</b>D1 = extreme, D1-C = high (critical), D2 = medium, D3 = low. "Initial" is before controls, "residual" is after controls.</div>
-      <div class="guide-item"><b>Risk portfolio status</b>Confirmed = incident has happened. Emerging = 2+ reports, no incident yet. Monitor = 1 report only. Grouped = events outside the top 12, summed. Data gap = incidents with no hazard event recorded; they can't be ranked until tagged.</div>
+      <div class="guide-item"><b>Risk portfolio status</b>Confirmed = incident has happened. Emerging = 2+ findings, no incident yet. Monitor = 1 finding only. Grouped = events outside the top 12, summed. Data gap = incidents with no hazard event recorded; they can't be ranked until tagged.</div>
       <div class="guide-item"><b>Findings vs actions</b>A <i>finding</i> is one hazard report (one Finding ID). Each finding can have several <i>corrective actions</i>. Charts and the map count findings; open-action counts, completion % and the Hazard actions tab count actions.</div>
       <div class="guide-item"><b>Recurrence check</b>A "Repeat" tag only counts as validated if an earlier record exists for the same area and hazard event. Commuting is excluded from plant recurrence and hotspot views.</div>
     </div>
@@ -492,7 +492,7 @@
   <section class="card portfolio-card">
     <div class="card-head">
       <h2>Priority risk portfolio</h2>
-      <p class="hint">Top 12 plant hazard events ranked by severity weight (commuting excluded). Click a row to filter the whole dashboard. Status: <b>Confirmed</b> = incident already occurred · <b>Emerging</b> = 2+ hazard reports, no incident yet · <b>Monitor</b> = only 1 report, too little signal · <b>Grouped</b> = events outside the top 12, summed · <b>Data gap</b> = incidents with no hazard event recorded. Hover a status for detail.</p>
+      <p class="hint">Top 12 plant hazard events ranked by severity weight (commuting excluded). Click a row to filter the whole dashboard. Status: <b>Confirmed</b> = incident already occurred · <b>Emerging</b> = 2+ hazard findings, no incident yet · <b>Monitor</b> = only 1 finding, too little signal · <b>Grouped</b> = events outside the top 12, summed · <b>Data gap</b> = incidents with no hazard event recorded. Hover a status for detail.</p>
     </div>
     <div class="table-wrap">
       <table id="portfolioTable">
@@ -1110,7 +1110,7 @@
     var rows = DATA.priority_matrix;
     if (!rows.length){
       var et = svgEl('text', {x:360, y:220, 'text-anchor':'middle', class:'axis-label'});
-      et.textContent = 'No incidents or hazard reports match the current filter';
+      et.textContent = 'No incidents or hazard findings match the current filter';
       svg.appendChild(et); bubbleNodes = {}; return;
     }
     var W = 720, H = 440, m = {l:52, r:20, t:16, b:44};
@@ -1344,7 +1344,7 @@
     var data = DATA.hotspot;
     var maxV = Math.max.apply(null, data.map(function(d){ return Math.max(d.incidents, d.hazards); })) || 1;
     data.forEach(function(d){
-      var row = el('div', {class:'hot-row' + (state.workstation === d.workstation ? ' is-active' : '') + (state.workstation && state.workstation !== d.workstation ? ' is-dim' : ''), tabindex:'0', role:'button', 'aria-label': d.workstation+': '+d.incidents+' incidents, '+d.hazards+' hazard reports'});
+      var row = el('div', {class:'hot-row' + (state.workstation === d.workstation ? ' is-active' : '') + (state.workstation && state.workstation !== d.workstation ? ' is-dim' : ''), tabindex:'0', role:'button', 'aria-label': d.workstation+': '+d.incidents+' incidents, '+d.hazards+' hazard findings'});
       row.appendChild(el('div', {class:'hot-label'}, d.workstation));
       var bars = el('div', {class:'hot-bars'});
       var b1 = el('div', {class:'hot-bar'}); b1.style.width = (d.incidents/maxV*100)+'%'; b1.style.background = 'var(--accent)';
@@ -1473,7 +1473,7 @@
         yCursor -= h;
         var rect = svgEl('rect', {x:x, y:yCursor, width:barW, height:Math.max(h-1.5,0), rx:2, fill:colorMap[pr]});
         rect.addEventListener('mouseenter', function(ev){
-          showTooltip(ev.clientX, ev.clientY, '<b>'+d.bucket+' days · '+pr+' priority</b><div class="tt-row"><span>Findings</span><span>'+v+'</span></div>');
+          showTooltip(ev.clientX, ev.clientY, '<b>'+d.bucket+' days · '+pr+' priority</b><div class="tt-row"><span>Open actions</span><span>'+v+'</span></div>');
         });
         rect.addEventListener('mousemove', function(ev){ tooltip.style.left = ev.clientX+'px'; tooltip.style.top = ev.clientY+'px'; });
         rect.addEventListener('mouseleave', hideTooltip);
@@ -1507,7 +1507,7 @@
     var box = document.getElementById('headlineText');
     var scope = hasFilter() ? 'For <b>'+esc(filterSummary())+'</b>: ' : '';
     if (!k.total_incidents && !k.hazard_actions_total){
-      box.innerHTML = scope + 'no incidents or hazard reports match this filter. Remove a filter to widen the view.';
+      box.innerHTML = scope + 'no incidents or hazard findings match this filter. Remove a filter to widen the view.';
       return;
     }
     var t = scope;
@@ -1524,7 +1524,7 @@
     var c = DATA.data_confidence;
     var rows = [
       {label:'Incidents mapped to a risk family', val: pct(c.incident_family_coverage)},
-      {label:'Hazard reports mapped to a risk family', val: pct(c.hazard_family_coverage)},
+      {label:'Hazard findings mapped to a risk family', val: pct(c.hazard_family_coverage)},
       {label:'HIRADC lines cross-referenced to taxonomy', val: pct(c.hiradc_taxonomy_coverage)},
       {label:'HIRADC lines with residual risk rated', val: pct(c.hiradc_residual_rated)}
     ];
@@ -1614,7 +1614,7 @@
         }
         el2.setAttribute('tabindex', ri === 0 ? '0' : '-1');
         el2.setAttribute('role', 'button');
-        el2.setAttribute('aria-label', z.label + ': ' + z.incidents + ' incidents, ' + z.hazards + ' hazard reports');
+        el2.setAttribute('aria-label', z.label + ': ' + z.incidents + ' incidents, ' + z.hazards + ' hazard findings');
         el2.addEventListener('click', function(){ selectSiteZone(key); });
         el2.addEventListener('keydown', function(ev){ if (ev.key==='Enter' || ev.key===' '){ ev.preventDefault(); selectSiteZone(key); } });
         wrap.appendChild(el2);
@@ -1625,7 +1625,7 @@
 
     var legend = document.getElementById('sitemapLegend');
     legend.innerHTML = '';
-    legend.appendChild(el('span', {class:'legend-caption'}, 'Combined incident + hazard-report count, ranked against all mapped areas (quartiles):'));
+    legend.appendChild(el('span', {class:'legend-caption'}, 'Combined incident + hazard-finding count, ranked against all mapped areas (quartiles):'));
     [['good','Low (bottom quartile)'],['warning','Moderate'],['serious','High'],['critical','Very high (top quartile)'],['axis','No records in current filter']].forEach(function(p){
       var item = el('span', {class:'legend-item'});
       var dot = el('span', {class:'legend-dot'});
@@ -1731,7 +1731,7 @@
     var statusMap = {Confirmed:'critical', Emerging:'warning', Monitor:'muted', Grouped:'muted', 'Data gap':'warning'};
     var STATUS_TIP = {
       Confirmed: 'At least one incident has already happened for this hazard event.',
-      Emerging: 'Two or more hazard reports, but no incident yet: act before it becomes one.',
+      Emerging: 'Two or more hazard findings, but no incident yet: act before it becomes one.',
       Monitor: 'Only one hazard report and no incident so far: too little signal to rank yet.',
       Grouped: 'All hazard events outside the top 12, added together so the table stays short. Not a status of risk.',
       'Data gap': 'Incidents recorded without a hazard event, so they cannot be placed in any row above. Fix by tagging the hazard event in the incident register.'
@@ -1897,7 +1897,7 @@
         var rect = svgEl('rect', {x:x, y:m.t+plotH-h, width:bw, height:Math.max(h,1), rx:2, fill:'var(--accent)', 'fill-opacity':'0.85'});
         bindTip(rect, '<b>'+monthLabel(d.month)+'</b><div class="tt-row"><span>'+M.label+'</span><span>'+fmtV(d.v)+'</span></div>' +
           '<div class="tt-row"><span>3-mo rolling avg</span><span>'+d.avg+'</span></div>' +
-          '<div class="tt-row"><span>Incidents</span><span>'+d.incidents+'</span></div><div class="tt-row"><span>Hazard reports</span><span>'+d.hazards+'</span></div>');
+          '<div class="tt-row"><span>Incidents</span><span>'+d.incidents+'</span></div><div class="tt-row"><span>Hazard findings</span><span>'+d.hazards+'</span></div>');
         svg.appendChild(rect);
         pts.push([m.l + i*colW + colW/2, m.t + plotH - (d.avg/maxV)*plotH]);
         var xl = svgEl('text', {class:'cat-label', x:x+bw/2, y:H-14, 'text-anchor':'middle'}); xl.textContent = monthLabel(d.month); svg.appendChild(xl);
@@ -1966,7 +1966,7 @@
     hint.textContent = M.label + ' by calendar month, ' + Y + ' (blue) next to ' + P + ' (grey). ▲ red = higher than the same month last year, ▼ green = lower. Hover a month for the year-to-date comparison.';
     leg.innerHTML = legendItem('var(--accent)', String(Y)) + legendItem('var(--axis)', String(P));
     note.textContent = (Y===DATA.meta.partial_year ? '* '+MONTH_ABBR[cutMonth-1]+' '+Y+' is partial; the year-to-date tiles compare the same calendar period in both years. ' : '') +
-      'Hazard reports are not compared because the hazard tracker starts in 2026, so there is no previous-year baseline yet. ' +
+      'Hazard findings are not compared because the hazard tracker starts in 2026, so there is no previous-year baseline yet. ' +
       (state.year ? 'The page Year filter is ignored here so both years stay visible.' : '');
   }
 
@@ -2181,7 +2181,6 @@
   });
 
   // ============= boot =============
-  window.__HSE = DATA;
   renderDrillHead();
   initMonthlyControls();
   refresh();
